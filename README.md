@@ -429,9 +429,13 @@ To adjust the text color of keys or values, the color of the classes `.jse-key` 
 onRenderValue(props: RenderValueProps) : RenderValueComponentDescription[]
 ```
 
-Customize rendering of the values. By default, `renderValue` is used, which renders a value as an editable div and depending on the value can also render a boolean toggle, a color picker, and a timestamp tag. Multiple components can be rendered alongside each other, like the boolean toggle and color picker being rendered left from the editable div. In order to disable for example the built-in color picker or timestamp tag, you can look up the source code of `renderValue`, copy it, and then remove the components that you do not want from the function. Built in value renderer components: `EditableValue`, `ReadonlyValue`, `BooleanToggle`, `ColorPicker`, `TimestampTag`, `EnumValue`.
+Customize rendering of the values. By default, `renderValue` is used, which renders a value as an editable div and depending on the value can also render a boolean toggle, a color picker, and a timestamp tag. Multiple components can be rendered alongside each other, like the boolean toggle and color picker being rendered left from the editable div. In order to disable for example the built-in color picker or timestamp tag, you can look up the source code of `renderValue`, copy it, and then remove the components that you do not want from the function. Built in value renderer components: `EditableValue`, `ReadonlyValue`, `BooleanToggle`, `ColorPicker`, `TimestampTag`, `EnumValue`, `Autocomplete`.
 
-For JSON Schema enums, there is a ready-made value renderer `renderJSONSchemaEnum` which renders enums using the `EnumValue` component. This can be used like:
+For JSON Schema enums and autocompletes, there is a ready-made value renderers:
+ - `renderJSONSchemaEnum` which renders enums using the `EnumValue` component.
+ - `renderJSONSchemaAutocomplete` which renders autocomplete using the `AutocompleteValue` component. 
+ 
+This can be used like:
 
 ```js
 import { renderJSONSchemaEnum, renderValue } from 'svelte-jsoneditor'
@@ -439,6 +443,15 @@ import { renderJSONSchemaEnum, renderValue } from 'svelte-jsoneditor'
 function onRenderValue(props) {
   // use the enum renderer, and fallback on the default renderer
   return renderJSONSchemaEnum(props, schema, schemaDefinitions) || renderValue(props)
+}
+```
+
+```js
+import { renderJSONSchemaAutocomplete, renderValue } from 'svelte-jsoneditor'
+
+function onRenderValue(props) {
+  // use the autocomplete renderer, and fallback on the default renderer
+  return renderJSONSchemaAutocomplete(props, schema, schemaDefinitions) || renderValue(props)
 }
 ```
 
@@ -837,11 +850,13 @@ The library exports a set of utility functions. The exact definitions of those f
 - Rendering of values:
   - `renderValue`
   - `renderJSONSchemaEnum`
+  - `renderJSONSchemaAutocomplete`
   - Components:
     - `BooleanToggle`
     - `ColorPicker`
     - `EditableValue`
     - `EnumValue`
+    - `AutocompleteValue`
     - `ReadonlyValue`
     - `TimestampTag`
   - HTML:

@@ -4,7 +4,7 @@ import type { JSONSchema, JSONSchemaDefinitions, JSONSchemaEnum } from '$lib/typ
 /**
  * Find enum options for given path in a JSONSchema
  */
-export function getJSONSchemaOptions(
+export function getJSONSchemaEnumOptions(
   schema: JSONSchema,
   schemaDefinitions: JSONSchemaDefinitions | undefined,
   path: JSONPath
@@ -12,6 +12,18 @@ export function getJSONSchemaOptions(
   const schemaForPath = findSchema(schema, schemaDefinitions || {}, path)
 
   return schemaForPath ? findEnum(schemaForPath) : undefined
+}
+
+/**
+ * Find autocomplete options for a given path in a JSONSchema.
+ */
+export function getJSONSchemaAutocompleteOptions(
+  schema: JSONSchema,
+  schemaDefinitions: JSONSchemaDefinitions | undefined,
+  path: JSONPath
+): JSONSchemaEnum | undefined {
+  const schemaForPath = findSchema(schema, schemaDefinitions || {}, path)
+  return schemaForPath ? findAutocomplete(schemaForPath) : undefined
 }
 
 /**
@@ -30,6 +42,27 @@ export function findEnum(schema: JSONSchema): JSONSchemaEnum | undefined {
     const match = composite.filter((entry) => entry.enum)
     if (match.length > 0) {
       return match[0].enum
+    }
+  }
+
+  return undefined
+}
+
+
+/**
+ * Finds an autocomplete definition in a JSON schema, as a property `autocomplete`
+ * or inside one of the schema's composite fields (`oneOf`, `anyOf`, `allOf`).
+ */
+export function findAutocomplete(schema: JSONSchema): JSONSchemaEnum | undefined {
+  if (Array.isArray(schema.autocomplete)) {
+    return schema.autocomplete
+  }
+
+  const composite = schema.oneOf || schema.anyOf || schema.allOf
+  if (Array.isArray(composite)) {
+    const match = composite.find((entry) => Array.isArray(entry.autocomplete))
+    if (match) {
+      return match.autocomplete
     }
   }
 

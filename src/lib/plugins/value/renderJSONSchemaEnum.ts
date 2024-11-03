@@ -1,5 +1,5 @@
 import EnumValue from './components/EnumValue.svelte'
-import { getJSONSchemaOptions } from '$lib/utils/jsonSchemaUtils.js'
+import { getJSONSchemaEnumOptions } from '$lib/utils/jsonSchemaUtils.js'
 import type {
   JSONSchema,
   JSONSchemaDefinitions,
@@ -17,7 +17,7 @@ export function renderJSONSchemaEnum(
   schema: JSONSchema,
   schemaDefinitions?: JSONSchemaDefinitions
 ): RenderValueComponentDescription[] | undefined {
-  const enumValues = getJSONSchemaOptions(schema, schemaDefinitions, props.path)
+  const enumValues = getJSONSchemaEnumOptions(schema, schemaDefinitions, props.path)
 
   if (enumValues) {
     const options = enumValues.map((enumValue) => ({

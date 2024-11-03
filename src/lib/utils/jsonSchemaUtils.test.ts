@@ -1,10 +1,16 @@
 import { test, describe } from 'vitest'
 import assert from 'assert'
-import { findEnum, findSchema, getJSONSchemaOptions } from './jsonSchemaUtils.js'
+import {
+  findAutocomplete,
+  findEnum,
+  findSchema,
+  getJSONSchemaAutocompleteOptions,
+  getJSONSchemaEnumOptions
+} from './jsonSchemaUtils.js'
 import type { JSONPath } from 'immutable-json-patch'
 
 describe('jsonSchemaUtils', () => {
-  describe('getJSONSchemaOptions', () => {
+  describe('getJSONSchemaEnumOptions', () => {
     test('should get the schema options', () => {
       const schema = {
         properties: {
@@ -22,8 +28,46 @@ describe('jsonSchemaUtils', () => {
         }
       }
 
-      const options = getJSONSchemaOptions(schema, undefined, ['job', '1', 'company'])
+      const options = getJSONSchemaEnumOptions(schema, undefined, ['job', '1', 'company'])
       assert.deepStrictEqual(options, ['test1', 'test2'])
+    })
+  })
+
+  describe('getJSONSchemaAutocompleteOptions', () => {
+    test('should get autocomplete options', () => {
+      const schema = {
+        properties: {
+          job: {
+            type: 'object',
+            properties: {
+              position: {
+                autocomplete: ['Manager', 'Developer', 'Designer']
+              }
+            }
+          }
+        }
+      }
+
+      const options = getJSONSchemaAutocompleteOptions(schema, undefined, ['job', 'position'])
+      assert.deepStrictEqual(options, ['Manager', 'Developer', 'Designer'])
+    })
+
+    test('should return undefined if no autocomplete options are found', () => {
+      const schema = {
+        properties: {
+          job: {
+            type: 'object',
+            properties: {
+              position: {
+                type: 'string'
+              }
+            }
+          }
+        }
+      }
+
+      const options = getJSONSchemaAutocompleteOptions(schema, undefined, ['job', 'position'])
+      assert.strictEqual(options, undefined)
     })
   })
 
@@ -655,6 +699,33 @@ describe('jsonSchemaUtils', () => {
         enum: [1, 2, 3]
       }
       assert.strictEqual(findEnum(schema), schema.enum)
+    })
+  })
+
+  describe('findAutocomplete', () => {
+    test('should find autocomplete options directly', () => {
+      const schema = {
+        type: 'object',
+        autocomplete: ['Option1', 'Option2', 'Option3']
+      }
+      assert.deepStrictEqual(findAutocomplete(schema), schema.autocomplete)
+    })
+
+    test('should find autocomplete options within oneOf', () => {
+      const schema = {
+        oneOf: [{ type: 'string' }, { autocomplete: ['OptionA', 'OptionB'] }]
+      }
+      assert.deepStrictEqual(findAutocomplete(schema), ['OptionA', 'OptionB'])
+    })
+
+    test('should return undefined if no autocomplete options are found', () => {
+      const schema = {
+        type: 'object',
+        properties: {
+          name: { type: 'string' }
+        }
+      }
+      assert.strictEqual(findAutocomplete(schema), undefined)
     })
   })
 })

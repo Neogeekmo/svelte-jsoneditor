@@ -42,6 +42,9 @@
       <a href="examples/json_schema_validation">JSON Schema validation</a>
     </li>
     <li>
+      <a href="examples/json_schema_validation2">JSON Schema validation (autocomplete)</a>
+    </li>
+    <li>
       <a href="examples/custom_theme_color">Custom theme color</a>
     </li>
     <li>
